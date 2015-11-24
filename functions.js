@@ -23,17 +23,17 @@ function loadClock(){
 	//var cubeMaterial3 = new THREE.MeshPhongMaterial( { color: 0x000000, specular:0xaa0000, envMap: reflectionCube, combine: THREE.MixOperation, reflectivity: 0.25 } );
 
 	var cubeMaterial1 = new THREE.MeshLambertMaterial( { color: 0xffffff, envMap: reflectionCube } );
-	var cubeMaterial2 = new THREE.MeshLambertMaterial( { color: 0xffee00, envMap: refractionCube, refractionRatio: 0.95 } );
+	var cubeMaterial2 = new THREE.MeshLambertMaterial( { color: 0xeecc00, envMap: refractionCube, refractionRatio: 0.95 } );
 	
 	var cubeMaterial3 = new THREE.MeshPhongMaterial( { 
-		color: 0xffaa22, 
+		color: 0xaa8822, 
 		envMap: reflectionCube, 
 		combine: THREE.MixOperation, 
-		reflectivity: 0.8, 
+		reflectivity: 0.6, 
 		opacity:0.5, 
 		opacityMap : THREE.ImageUtils.loadTexture("obj/scratched_glass.jpg", {}, function(){}),
 		bumpMap    :  THREE.ImageUtils.loadTexture("obj/scratched_glass.jpg", {}, function(){}),
-		bumpScale  :  0.05,
+		bumpScale  :  0.01,
 		transparent: true
 	});
 
@@ -140,10 +140,20 @@ function loadClock(){
 
 	/* MODELS */
 
-	var oldWall = new THREE.Mesh( new THREE.PlaneGeometry(150,150,1,1), wallMaterial );
-	oldWall.castShadow = true;
-	oldWall.receiveShadow = true;
-	sceneGraph.add( oldWall );
+	var oldWall = [];
+	var wallWidth = 150;
+	var nWalls = 4;
+
+	for(var i = 0; i < nWalls; i++){
+		for(var j = 0; j < nWalls; j++){
+			oldWall[i] = new THREE.Mesh( new THREE.PlaneGeometry(wallWidth,wallWidth,1,1), wallMaterial );
+			oldWall[i].castShadow = false;
+			oldWall[i].receiveShadow = true;
+			oldWall[i].position.x = -wallWidth + (i-1)*wallWidth;
+			oldWall[i].position.y = -wallWidth + (j-1)*wallWidth;
+			sceneGraph.add( oldWall[i] );
+		}
+	}
 
 	onProgress = function ( xhr ) {
 		if ( xhr.lengthComputable ) {
