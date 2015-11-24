@@ -9,31 +9,47 @@
 		</style>
 	</head>
 	<body>
-		<script src="js/three.min.js"></script>
+		<script src="js/three.js"></script>
 		<script src="functions.js"></script>
+		<script src="js/TrackballControls.js"></script>
 
+		<script src="js/MTLLoader.js"></script>
+		<script src="js/DDSLoader.js"></script>
+		<script src="js/OBJMTLLoader.js"></script>
+		<script src="js/OBJLoader.js"></script>
 		
+		<script src="js/FresnelShader.js"></script>
 
 		<script>
 			var time = new Date();
-			var loader2;
+			var loader, loader2;
 			var mouseX, mouseY;
 
+			var secondsRot, minutesRot, hoursRot;
+
+			var presentTime = true;
+			var windingTimeFactor = 1;
+
+			var seconds_now, minutes_now;
+
+			//Objects
+			var dial1, dial2;
 
 			var scene = new THREE.Scene();
+			var sceneCube = new THREE.Scene();
 			//scene.fog = new THREE.FogExp2( 0xffffff, 0.009 );
 
 			var camera = new THREE.PerspectiveCamera( 60, window.innerWidth/window.innerHeight, 0.1, 200000 );
 			scene.add(camera);
 			
-			//scene.fog = new THREE.Fog( 0x000000, 30, 10005 );
+			//scene.fog = new THREE.Fog( 0x000000, 30, 4005 );
 			
 			var renderer = new THREE.WebGLRenderer({ alpha: true, antialiasing: true });
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			document.body.appendChild( renderer.domElement );
 			renderer.shadowMapEnabled = true;
 			renderer.shadowMapType = THREE.PCFSoftShadowMap;
-			renderer.setClearColor ( 0xB3EAFF, 1 );
+			renderer.setClearColor ( 0x000000, 1 );
 
 
 			//Skapar en grupp som ska innehålla hela scengrafen
@@ -41,18 +57,26 @@
 
 			clock = new THREE.Object3D;
 			secondHand = new THREE.Object3D;
+			secondHandGroup = new THREE.Object3D;
 			minuteHand = new THREE.Object3D;
 			hourHand = new THREE.Object3D;
-			clock.add(secondHand);
+			secondHandGroup.add(secondHand);
+			clock.add(secondHandGroup);
 			clock.add(minuteHand);
 			clock.add(hourHand);
 			sceneGraph.add(clock);
 
 
+			//Controls
+			controls = new THREE.TrackballControls( camera );
+			controls.zoomSpeed = 0.5;
+			controls.panSpeed = 0;
+			controls.rotateSpeed = 6;
+
 			/* Camera Settings */
-			camera.position.z = 3500;
-			camera.position.x = 15;
-			camera.position.y = 15;
+			camera.position.z = 0;
+			camera.position.x = 0;
+			camera.position.y = 1100;
 			camera.lookAt(new THREE.Vector3(0,0,0));
 
 
@@ -60,23 +84,34 @@
 
 			addLights();
 			loadClock();
+
+
 			
-			
+		
+
 			
 			scene.add(sceneGraph);
 			
-			sceneGraph.rotation.z = 0;
-			clock.rotation.y = -Math.PI/2;
-			clock.scale.x = 10;
-			clock.scale.y = 10;
-			clock.scale.z = 10;
+			sceneGraph.rotation.x = -Math.PI/2;
+			clock.rotation.x = Math.PI/2;
+			clock.rotation.y = Math.PI;
+
+			clock.scale.x = 2;
+			clock.scale.y = 2;
+			clock.scale.z = 2;
+
+			
+			secondHandGroup.position.x = -1.97;
+			secondHandGroup.position.z = -2.4;
+			clock.position.z = 100;
 
 			sceneGraph.scale.x = 20;
 			sceneGraph.scale.y = 20;
 			sceneGraph.scale.z = 20;
 			
 
-
+			//seconds_now = -Math.PI*2*new Date().getTime() / 60000;
+			//minutes_now = Math.PI*2*time.getMinutes()/60 - seconds_now/60;
 
 
 			document.addEventListener( 'mousemove', onDocumentMouseMove, false );
@@ -86,7 +121,7 @@
 
 				mouseX = (event.clientX - window.innerWidth/2)/window.innerWidth;
 				mouseY = (event.clientY - window.innerHeight/2)/window.innerHeight;
-				console.log(mouseX);
+				//console.log(mouseX);
 
 			}
 
@@ -97,22 +132,42 @@
 			}
 			
 
-			//Renderingsloop
+		var init_time = new Date().getTime() / 1000;
+			var zoom_time = 2;
+
 			var render = function () {
 
+				time2 = new Date().getTime() / 1000 - init_time;
+
+				if(time2 < zoom_time){
+					camera.position.z = 5100 - 4800*Math.sin(time2*(Math.PI*2/4)/zoom_time);
+				}
 				time = new Date();
 
-				sceneGraph.rotation.y = mouseX;
-				sceneGraph.rotation.x = mouseY;
 				
+				//mouseControls();
+
+				controls.update();
 				setHands();
+
+				//sceneGraph.rotation.y += Math.sin(time2/2)/5000;
+				//sceneGraph.rotation.x += Math.sin(time2/1)/4000;
 
 				requestAnimationFrame( render );
 				renderer.render(scene, camera);
+				//renderer.render(sceneCube, camera);
 			};
 
 
+			function mouseControls(){
+				sceneGraph.rotation.y = mouseX;
+				sceneGraph.rotation.x = mouseY;
 
+				//camera.position.z = 1100-((Math.abs(mouseY)+Math.abs(mouseX))*500);
+				console.log(camera.position.z );
+				camera.position.x = 15;
+				camera.position.y = 15;
+			}
 
 
 			render();
