@@ -20,10 +20,12 @@
 		
 		<script src="js/FresnelShader.js"></script>
 
+
 		<script>
 			var time = new Date();
 			var loader, loader2;
 			var mouseX, mouseY;
+
 
 			var secondsRot, minutesRot, hoursRot;
 
@@ -34,7 +36,7 @@
 
 			//Objects
 			var dial1, dial2;
-
+			var pencilSize =1.7;
 			var scene = new THREE.Scene();
 			var sceneCube = new THREE.Scene();
 			//scene.fog = new THREE.FogExp2( 0xffffff, 0.009 );
@@ -54,6 +56,9 @@
 
 			//Skapar en grupp som ska innehålla hela scengrafen
 			sceneGraph = new THREE.Object3D;
+
+			sketch = new THREE.Object3D;
+			sceneGraph.add(sketch);
 
 			clock = new THREE.Object3D;
 			secondHand = new THREE.Object3D;
@@ -86,7 +91,7 @@
 			loadClock();
 
 
-			
+
 		
 
 			
@@ -102,7 +107,7 @@
 			
 			secondHandGroup.position.x = -1.97;
 			secondHandGroup.position.z = -2.4;
-			clock.position.z = 10;
+			clock.position.z = 0;
 
 			sceneGraph.scale.x = 20;
 			sceneGraph.scale.y = 20;
@@ -139,7 +144,7 @@
 				time2 = new Date().getTime() / 1000 - init_time;
 
 				if(time2 < zoom_time){
-					camera.position.z = 5100 - 3800*Math.sin(time2*(Math.PI*2/4)/zoom_time);
+					camera.position.z = 5100 - 3900*Math.sin(time2*(Math.PI*2/4)/zoom_time);
 				}
 				time = new Date();
 
@@ -161,9 +166,6 @@
 			function mouseControls(){
 				sceneGraph.rotation.y = mouseX;
 				sceneGraph.rotation.x = mouseY;
-
-				//camera.position.z = 1100-((Math.abs(mouseY)+Math.abs(mouseX))*500);
-				console.log(camera.position.z );
 				camera.position.x = 15;
 				camera.position.y = 15;
 			}

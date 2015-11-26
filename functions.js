@@ -20,21 +20,62 @@ function loadClock(){
 	refractionCube.mapping = THREE.CubeRefractionMapping;
 	refractionCube.format = THREE.RGBFormat;
 
-	//var cubeMaterial3 = new THREE.MeshPhongMaterial( { color: 0x000000, specular:0xaa0000, envMap: reflectionCube, combine: THREE.MixOperation, reflectivity: 0.25 } );
+	//var glassMaterial = new THREE.MeshPhongMaterial( { color: 0x000000, specular:0xaa0000, envMap: reflectionCube, combine: THREE.MixOperation, reflectivity: 0.25 } );
 
 	var cubeMaterial1 = new THREE.MeshLambertMaterial( { color: 0xffffff, envMap: reflectionCube } );
 	var cubeMaterial2 = new THREE.MeshLambertMaterial( { color: 0xeecc00, envMap: refractionCube, refractionRatio: 0.95 } );
 	
-	var cubeMaterial3 = new THREE.MeshPhongMaterial( { 
+	var glassMaterial = new THREE.MeshPhongMaterial( { 
 		color: 0xaa8822, 
 		envMap: reflectionCube, 
 		combine: THREE.MixOperation, 
-		reflectivity: 0.6, 
-		opacity:0.5, 
+		reflectivity: 0.5, 
+		opacity:0.4, 
 		opacityMap : THREE.ImageUtils.loadTexture("obj/scratched_glass.jpg", {}, function(){}),
 		bumpMap    :  THREE.ImageUtils.loadTexture("obj/scratched_glass.jpg", {}, function(){}),
 		bumpScale  :  0.01,
 		transparent: true
+	});
+
+	var frameMaterial = new THREE.MeshPhongMaterial( { 
+		color: 0x565544, 
+		envMap: reflectionCube, 
+		combine: THREE.MixOperation, 
+		reflectivity: 0.6, 
+		opacity:1, 
+		opacityMap : THREE.ImageUtils.loadTexture("obj/scratched_glass.jpg", {}, function(){}),
+		bumpMap    :  THREE.ImageUtils.loadTexture("obj/scratched_glass.jpg", {}, function(){}),
+		bumpScale  :  0.1,
+		transparent: true
+	});
+
+	var pencilMaterial1 = new THREE.MeshPhongMaterial( { 
+		color: 0xc12e2e, 
+		envMap: reflectionCube, 
+		combine: THREE.MixOperation, 
+		reflectivity: 0.01, 
+		opacity:1, 
+		opacityMap : THREE.ImageUtils.loadTexture("obj/scratched_glass.jpg", {}, function(){}),
+		bumpMap    :  THREE.ImageUtils.loadTexture("obj/scratched_glass.jpg", {}, function(){}),
+		bumpScale  :  0.00,
+	});
+
+	var pencilMaterial2 = new THREE.MeshPhongMaterial( { 
+		color: 0x333333, 
+		envMap: reflectionCube, 
+		combine: THREE.MixOperation, 
+		reflectivity: 0.3, 
+		opacity:1, 
+		opacityMap : THREE.ImageUtils.loadTexture("obj/scratched_glass.jpg", {}, function(){}),
+	});
+
+	var pencilMaterial3 = new THREE.MeshPhongMaterial( { 
+		color: 0x000000, 
+		envMap: reflectionCube, 
+		combine: THREE.MixOperation, 
+		reflectivity: 0, 
+		opacity:1, 
+		opacityMap : THREE.ImageUtils.loadTexture("obj/scratched_glass.jpg", {}, function(){}),
 	});
 
 
@@ -103,17 +144,6 @@ function loadClock(){
 
 	});
 
-	var FrameMaterial = new THREE.MeshPhongMaterial({
-		color      :  new THREE.Color("rgb(100,100,100)"),
-		emissive   :  new THREE.Color("rgb(7,3,5)"),
-		specular   :  new THREE.Color("rgb(20,20,20)"),
-		specularMap    :  THREE.ImageUtils.loadTexture("obj/copper1.jpg", {}, function(){}),
-		shininess  :  10,
-		bumpMap    :  THREE.ImageUtils.loadTexture("obj/copper1.jpg", {}, function(){}),
-		map        :  THREE.ImageUtils.loadTexture("obj/wood1.jpg", {}, function(){}),
-		bumpScale  : 2,
-
-	});
 
 	var secondFrameMaterial = new THREE.MeshPhongMaterial({
 		color      :  new THREE.Color("rgb(100,100,100)"),
@@ -133,6 +163,16 @@ function loadClock(){
 		shininess  : 20,
 		bumpMap    :  THREE.ImageUtils.loadTexture("obj/copper1.jpg", {}, function(){}),
 		map        :  THREE.ImageUtils.loadTexture("obj/copper1.jpg", {}, function(){}),
+		bumpScale  :  1,
+
+	});
+
+	var sketchMaterial = new THREE.MeshPhongMaterial({
+		color      :  new THREE.Color("rgb(50,50,50)"),
+		emissive   :  new THREE.Color("rgb(7,3,5)"),
+		specular   :  new THREE.Color("rgb(20,20,20)"),
+		shininess  : 20,
+		map        :  THREE.ImageUtils.loadTexture("obj/sketch.JPG", {}, function(){}),
 		bumpScale  :  1,
 
 	});
@@ -208,7 +248,7 @@ function loadClock(){
 		object.traverse( function ( child )
 	    {
 	        if ( child instanceof THREE.Mesh )
-	            child.material = FrameMaterial;
+	            child.material = frameMaterial;
 	    });
 	}, onProgress, onError);
 
@@ -246,7 +286,7 @@ function loadClock(){
 				dial2 = new THREE.Mesh(geometry, dialMaterial2);
 				dial2.castShadow = false;
 				dial2.receiveShadow = true;
-				clock.position.z = -2;
+
 
 				clock.add(dial2);
 				
@@ -259,7 +299,7 @@ function loadClock(){
 				dial2 = new THREE.Mesh(geometry, secondFrameMaterial);
 				dial2.castShadow = true;
 				dial2.receiveShadow = true;
-				clock.position.z = -2;
+
 
 				clock.add(dial2);
 				
@@ -269,12 +309,81 @@ function loadClock(){
 
 			function(geometry) {
 
-				dial2 = new THREE.Mesh(geometry, cubeMaterial3);
+				dial2 = new THREE.Mesh(geometry, glassMaterial);
 				dial2.castShadow = false;
 				dial2.receiveShadow = false;
-				clock.position.z = -2;
 
 				clock.add(dial2);
+				
+		});
+
+	loader.load("obj/sketch.js", 
+
+			function(geometry) {
+
+				object = new THREE.Mesh(geometry, sketchMaterial);
+				object.castShadow = false;
+				object.receiveShadow = false;
+				object.position.x = -25;
+				object.position.z = 10;
+				object.position.y = -2.3;
+				object.rotation.y = -5*Math.PI/4;
+				object.scale.x = 3;
+				object.scale.y = 3;
+				object.scale.z = 3;
+
+				clock.add(object);
+				
+		});
+
+	loader.load("obj/pencil1.js", 
+
+			function(geometry) {
+
+				object = new THREE.Mesh(geometry, sketchMaterial);
+				object.castShadow = false;
+				object.receiveShadow = false;
+				object.position.x = 15;
+				object.rotation.y = -5.1*Math.PI/2;
+				object.scale.x = pencilSize;
+				object.scale.y = pencilSize;
+				object.scale.z = pencilSize;
+
+				clock.add(object);
+				
+		});
+
+	loader.load("obj/pencil2.js", 
+
+			function(geometry) {
+
+				object = new THREE.Mesh(geometry, pencilMaterial2);
+				object.castShadow = false;
+				object.receiveShadow = false;
+				object.position.x = 15;
+				object.rotation.y = -5.1*Math.PI/2;
+				object.scale.x = pencilSize;
+				object.scale.y = pencilSize;
+				object.scale.z = pencilSize;
+
+				clock.add(object);
+				
+		});
+
+	loader.load("obj/pencil3.js", 
+
+			function(geometry) {
+
+				object = new THREE.Mesh(geometry, sketchMaterial);
+				object.castShadow = false;
+				object.receiveShadow = false;
+				object.position.x = 15;
+				object.rotation.y = -5.1*Math.PI/2;
+				object.scale.x = pencilSize;
+				object.scale.y = pencilSize;
+				object.scale.z = pencilSize;
+
+				clock.add(object);
 				
 		});
 }
